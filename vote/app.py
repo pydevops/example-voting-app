@@ -5,12 +5,16 @@ import socket
 import random
 import json
 import logging
+from prometheus_flask_exporter import PrometheusMetrics
 
 option_a = os.getenv('OPTION_A', "Cats")
 option_b = os.getenv('OPTION_B', "Dogs")
 hostname = socket.gethostname()
 
 app = Flask(__name__)
+metrics = PrometheusMetrics(app)
+# static information as metric
+metrics.info('app_info', 'Vote Application', version='1.0.1')
 
 gunicorn_error_logger = logging.getLogger('gunicorn.error')
 app.logger.handlers.extend(gunicorn_error_logger.handlers)
@@ -48,4 +52,4 @@ def hello():
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=80, debug=True, threaded=True)
+    app.run(host='0.0.0.0', port=80, debug=False, threaded=True)
